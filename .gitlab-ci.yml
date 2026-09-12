@@ -1,0 +1,31 @@
+# Deliberately forgiving: this must never be the thing that blocks a merge at 3am.
+# It reports problems; it does not gate. Tighten it only if you actually want gates.
+stages: [check]
+
+test:
+  stage: check
+  image: python:3.13
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+  before_script:
+    - pip install uv
+    - cd api && uv sync --frozen
+  script:
+    # Only the weight-free unit tests — GPU/Ollama/model-dependent tests need
+    # hardware and downloaded weights CI doesn't have.
+    - uv run pytest -q -k "not (gpu or ollama or diariz or stt or integration or live)"
+  allow_failure: true
+
+secret-scan:
+  stage: check
+  image: alpine:latest
+  script:
+    - apk add --no-cache git grep
+    # Catch the classic mistake: a real key committed in panic.
+    - |
+      if git grep -nIE '(sk-ant-[A-Za-z0-9_-]{20,}|sk-[A-Za-z0-9]{32,}|AIza[A-Za-z0-9_-]{30,})' -- . ':!*.example' ':!.gitlab-ci.yml'; then
+        echo "!!! Possible committed secret above. Rotate the key, then scrub history."
+        exit 1
+      fi
+      echo "No obvious secrets committed."

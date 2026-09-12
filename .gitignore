@@ -1,0 +1,65 @@
+# ---- secrets (NEVER commit) ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# ---- node ----
+node_modules/
+.next/
+out/
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ---- python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.uv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+*.ses
+
+# ---- rust ----
+target/
+
+# ---- data / models (hackathon repos accrete these fast) ----
+*.sqlite
+*.sqlite3
+*.db
+data/raw/
+*.ckpt
+*.safetensors
+*.gguf
+
+# ---- os / editor ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+*.swp
+
+# ---- misc ----
+.cache/
+coverage/
+tmp/
+
+# ---- local model weights (hackathon) ----
+api/models/
+
+# ---- persisted API results ----
+api/data/
+
+# agent scratch (reports, ledgers)
+.superpowers/
